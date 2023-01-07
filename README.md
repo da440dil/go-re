@@ -1,5 +1,10 @@
 # go-re
 
+![GitHub Actions](https://github.com/da440dil/go-re/actions/workflows/go.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/da440dil/go-re/badge.svg?branch=main)](https://coveralls.io/github/da440dil/go-re?branch=main)
+[![Go Reference](https://pkg.go.dev/badge/github.com/da440dil/go-re.svg)](https://pkg.go.dev/github.com/da440dil/go-re)
+[![Go Report Card](https://goreportcard.com/badge/github.com/da440dil/go-re)](https://goreportcard.com/report/github.com/da440dil/go-re)
+
 Re-execution for functions with configurable limits.
 
 [Example](./examples/exponential/main.go) usage:

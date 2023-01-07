@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWithMaxRetries(t *testing.T) {
+func TestMaxRetries(t *testing.T) {
 	b := Constant(time.Second)
-	b = WithMaxRetries(3)(b)
+	b = MaxRetries(3)(b)
 	for i := 0; i < 3; i++ {
 		it := b.Iterator()
 		d, done := it.Next()
@@ -28,8 +28,8 @@ func TestWithMaxRetries(t *testing.T) {
 	}
 }
 
-func ExampleWithMaxRetries_constant() {
-	it := WithMaxRetries(3)(Constant(time.Second)).Iterator()
+func ExampleMaxRetries_constant() {
+	it := MaxRetries(3)(Constant(time.Second)).Iterator()
 	for i := 0; i < 4; i++ {
 		d, done := it.Next()
 		fmt.Printf("#%v: { %v, %v }\n", i, d, done)
@@ -41,8 +41,8 @@ func ExampleWithMaxRetries_constant() {
 	// #3: { 0s, true }
 }
 
-func ExampleWithMaxRetries_linear() {
-	it := WithMaxRetries(3)(Linear(time.Second)).Iterator()
+func ExampleMaxRetries_linear() {
+	it := MaxRetries(3)(Linear(time.Second)).Iterator()
 	for i := 0; i < 4; i++ {
 		d, done := it.Next()
 		fmt.Printf("#%v: { %v, %v }\n", i, d, done)
@@ -54,8 +54,8 @@ func ExampleWithMaxRetries_linear() {
 	// #3: { 0s, true }
 }
 
-func ExampleWithMaxRetries_exponential() {
-	it := WithMaxRetries(3)(Exponential(time.Second)).Iterator()
+func ExampleMaxRetries_exponential() {
+	it := MaxRetries(3)(Exponential(time.Second)).Iterator()
 	for i := 0; i < 4; i++ {
 		d, done := it.Next()
 		fmt.Printf("#%v: { %v, %v }\n", i, d, done)
@@ -67,10 +67,10 @@ func ExampleWithMaxRetries_exponential() {
 	// #3: { 0s, true }
 }
 
-func TestWithJitter(t *testing.T) {
+func TestJitter(t *testing.T) {
 	b := Linear(time.Second)
-	b = WithMaxRetries(3)(b)
-	b = WithJitter(time.Millisecond * 100)(b)
+	b = MaxRetries(3)(b)
+	b = Jitter(time.Millisecond * 100)(b)
 	for i := 0; i < 3; i++ {
 		it := b.Iterator()
 		d, done := it.Next()
@@ -89,7 +89,7 @@ func TestWithJitter(t *testing.T) {
 
 	// for test coverage
 	b = Linear(time.Millisecond * -100)
-	b = WithJitter(time.Millisecond * 100)(b)
+	b = Jitter(time.Millisecond * 100)(b)
 	it := b.Iterator()
 	d, done := it.Next()
 	require.Equal(t, time.Duration(0), d)

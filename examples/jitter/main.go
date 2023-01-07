@@ -15,15 +15,9 @@ func main() {
 		}
 		return false, fmt.Errorf("%w", re.ErrRetryable)
 	}
-	// Use linear algorithm with delay between retries 10ms with maximum number of retries 5.
-	// Set 5ms maximum duration randomly added to or extracted from delay between retries
-	// to improve performance under high contention.
-	fn = re.Tryable(
-		fn,
-		re.Linear(time.Millisecond*10),
-		re.WithMaxRetries(5),
-		re.WithJitter(time.Millisecond*5),
-	)
+	// Use linear algorithm with delay between retries 10 ms with maximum number of retries 5.
+	// Set 5 ms maximum duration randomly added to or extracted from delay between retries to improve performance under high contention.
+	fn = re.Tryable(fn, re.Linear(time.Millisecond*10), re.MaxRetries(5), re.Jitter(time.Millisecond*5))
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*200)
 	defer cancel()

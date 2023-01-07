@@ -30,8 +30,8 @@ func (i *maxRetriesI) Next() (time.Duration, bool) {
 	return 0, true
 }
 
-// WithMaxRetries sets maximum number of retries.
-func WithMaxRetries(n int) Decorator {
+// MaxRetries sets maximum number of retries.
+func MaxRetries(n int) Decorator {
 	return func(b Iterable) Iterable {
 		return maxRetriesB{b, n}
 	}
@@ -69,8 +69,8 @@ func (i jitterI) Next() (time.Duration, bool) {
 	return v, done
 }
 
-// WithJitter sets maximum duration randomly added to or extracted from delay between retries to improve performance under high contention.
-func WithJitter(d time.Duration) Decorator {
+// Jitter sets maximum duration randomly added to or extracted from delay between retries to improve performance under high contention.
+func Jitter(d time.Duration) Decorator {
 	return func(b Iterable) Iterable {
 		j := int64(d)
 		return jitterB{b, j*2 + 1, j}

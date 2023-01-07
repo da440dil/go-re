@@ -15,8 +15,8 @@ func main() {
 		}
 		return false, fmt.Errorf("%w", re.ErrRetryable)
 	}
-	// Use exponential algorithm with delay between retries 10ms with maximum number of retries 5.
-	fn = re.Tryable(fn, re.Exponential(time.Millisecond*10), re.WithMaxRetries(5))
+	// Use exponential algorithm with delay between retries 10 ms with maximum number of retries 5.
+	fn = re.Tryable(fn, re.Exponential(time.Millisecond*10), re.MaxRetries(5))
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*500)
 	defer cancel()

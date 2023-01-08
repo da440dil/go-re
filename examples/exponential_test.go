@@ -1,4 +1,4 @@
-package main
+package re_test
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/da440dil/go-re"
 )
 
-func main() {
+func Example_exponential() {
 	fn := func(ctx context.Context, i int) (bool, error) {
 		if i == 0 {
 			return true, nil

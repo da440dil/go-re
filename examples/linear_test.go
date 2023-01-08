@@ -1,4 +1,4 @@
-package main
+package re_test
 
 import (
 	"context"
@@ -8,17 +8,17 @@ import (
 	"github.com/da440dil/go-re"
 )
 
-func main() {
+func Example_linear() {
 	fn := func(ctx context.Context, i int) (bool, error) {
 		if i == 0 {
 			return true, nil
 		}
 		return false, fmt.Errorf("%w", re.ErrRetryable)
 	}
-	// Use exponential algorithm with delay between retries 10 ms with maximum number of retries 5.
-	fn = re.Tryable(fn, re.Exponential(time.Millisecond*10), re.MaxRetries(5))
+	// Use linear algorithm with delay between retries 10 ms with maximum number of retries 5.
+	fn = re.Tryable(fn, re.Linear(time.Millisecond*10), re.MaxRetries(5))
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*500)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*200)
 	defer cancel()
 
 	for i := 0; i < 3; i++ {

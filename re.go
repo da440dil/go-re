@@ -4,6 +4,7 @@ package re
 import (
 	"context"
 	"errors"
+	"iter"
 	"time"
 )
 
@@ -14,12 +15,9 @@ var ErrRetryable = errors.New("retryable")
 type Retryable[T any, U any] func(ctx context.Context, v T) (U, error)
 
 // Tryable returns passed function with retry logic.
-func Tryable[T any, U any](fn Retryable[T, U], b Iterable, fns ...Decorator) Retryable[T, U] {
-	for _, fn := range fns {
-		b = fn(b)
-	}
+func Tryable[T any, U any](fn Retryable[T, U], it iter.Seq[time.Duration]) Retryable[T, U] {
 	return func(ctx context.Context, v T) (U, error) {
-		var it Iterator
+		var next func() (time.Duration, bool)
 		var timer *time.Timer
 		for {
 			r, err := fn(ctx, v)
@@ -29,19 +27,24 @@ func Tryable[T any, U any](fn Retryable[T, U], b Iterable, fns ...Decorator) Ret
 			if !errors.Is(err, ErrRetryable) {
 				return r, err
 			}
-			if it == nil {
-				it = b.Iterator()
+
+			if next == nil {
+				var stop func()
+				next, stop = iter.Pull(it)
+				defer stop()
 			}
-			d, done := it.Next()
-			if done {
+			d, ok := next()
+			if !ok {
 				return r, err
 			}
+
 			if timer == nil {
 				timer = time.NewTimer(d)
 				defer timer.Stop()
 			} else {
 				timer.Reset(d)
 			}
+
 			select {
 			case <-ctx.Done():
 				return r, ctx.Err()

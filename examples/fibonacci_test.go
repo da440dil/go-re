@@ -9,24 +9,29 @@ import (
 )
 
 func Example_fibonacci() {
-	fn := func(ctx context.Context, i int) (bool, error) {
-		if i == 0 {
-			return true, nil
+	fn := func(ctx context.Context, x int) (bool, error) {
+		// { 0 => true, 1 => false, 2 => true, ... => false }
+		if x > 2 || x%2 != 0 {
+			return false, fmt.Errorf("%w", re.ErrRetryable)
 		}
-		return false, fmt.Errorf("%w", re.ErrRetryable)
+		return true, nil
 	}
-	// Use exponential algorithm with delay between retries 10 ms with maximum number of retries 5.
-	fn = re.Tryable(fn, re.Exponential(time.Millisecond*10), re.MaxRetries(5))
+	// Use Fibonacci algorithm with delay between retries 10 ms & maximum number of retries 4.
+	fn = re.Tryable(fn, re.Fibonacci(time.Millisecond*10, 4))
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*500)
+	for i := range 3 {
+		ok, err := fn(context.Background(), i)
+		fmt.Printf("ok: %v, err: %v\n", ok, err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*40)
 	defer cancel()
 
-	for i := 0; i < 3; i++ {
-		ok, err := fn(ctx, i)
-		fmt.Printf("{ i: %v, ok: %v, err: %v }\n", i, ok, err)
-	}
+	ok, err := fn(ctx, 3)
+	fmt.Printf("ok: %v, err: %v\n", ok, err)
 	// Output:
-	// { i: 0, ok: true, err: <nil> }
-	// { i: 1, ok: false, err: retryable }
-	// { i: 2, ok: false, err: context deadline exceeded }
+	// ok: true, err: <nil>
+	// ok: false, err: retryable
+	// ok: true, err: <nil>
+	// ok: false, err: context deadline exceeded
 }
